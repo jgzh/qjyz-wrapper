@@ -10,7 +10,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 ?>
                 <div class="list underline">
                     <img src="./assets/img/folder-documents.png" class="list-icon">
-                    <a target='_blank' href='./<?php echo "./{$cate['name']}/{$news[1][$i]}";?>'>
+                    <a href='./<?php echo "./{$cate['name']}/{$news[1][$i]}";?>'>
                         <div><span class="list-title"><?php echo $news[2][$i];?></span><span class='place-right'><?php echo $news[3][$i];?></span></div>
                     </a>
                 </div>

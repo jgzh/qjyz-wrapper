@@ -8,11 +8,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     <title><?php echo $title;?></title>
 
     <base href="<?php echo BASEHREF;?>"/>
-    <link type="text/css" rel="stylesheet" href="/assets/metroui/3.0.14/css/metro.min.css"/>
-    <link type="text/css" rel="stylesheet" href="/assets/metroui/3.0.14/css/metro-icons.min.css"/>
-    <link type="text/css" rel="stylesheet" href="/assets/metroui/3.0.14/css/metro-responsive.min.css"/>
+    <link type="text/css" rel="stylesheet" href="./assets/metroui/3.0.14/css/metro.min.css"/>
+    <link type="text/css" rel="stylesheet" href="./assets/metroui/3.0.14/css/metro-icons.min.css"/>
+    <link type="text/css" rel="stylesheet" href="./assets/metroui/3.0.14/css/metro-responsive.min.css"/>
     <style>
-        body, h1, h2, h3, h4, h5, h6, span {
+        body, h1, h2, h3, h4, h5, h6, span, p {
             font-family: "微软雅黑", "Segoe UI","Open Sans",sans-serif,serif;
         }
         .underline span:hover {
@@ -20,8 +20,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         }
     </style>
 
-    <script type="text/javascript" src="/assets/jquery/1.12.3/jquery.min.js"></script>
-    <script type="text/javascript" src="/assets/metroui/3.0.14/js/metro.min.js"></script>
+    <script type="text/javascript" src="./assets/jquery/1.12.3/jquery.min.js"></script>
+    <script type="text/javascript" src="./assets/metroui/3.0.14/js/metro.min.js"></script>
 </head>
 <body>
     <div class="container">

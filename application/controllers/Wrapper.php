@@ -99,6 +99,7 @@ class Wrapper extends CI_Controller {
         preg_match_all($pattern, $src, $date);
         $pattern = "/<td id=\"cctent\" align=\"left\">(.*?)<\/td>\r?\n +<td align=\"center\">&nbsp;<\/td>/si";
         preg_match_all($pattern, $src, $content);
+        $content[1][0] = str_replace('onLoad="fade(this,560,1000)"', '', $content[1][0]);
         $this->load->view('metroui/header', array(
             'site' => $this->site,
             'title'=> $cate['cname'] .' - 巧家一中 Wrapper'
@@ -146,5 +147,6 @@ class Wrapper extends CI_Controller {
 
     private function gallery($cate, $id = 1)
     {
+        $this->load->view('metroui/start-screen');
     }
 }
