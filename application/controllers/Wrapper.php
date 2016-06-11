@@ -54,10 +54,9 @@ class Wrapper extends CI_Controller {
 
     public function index()
     {
-        $site_url = $this->site['path'];
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-        curl_setopt($ch, CURLOPT_URL, $site_url);
+        curl_setopt($ch, CURLOPT_URL, $this->site['path']);
         $src = mb_convert_encoding(curl_exec($ch), 'UTF-8', 'GBK');
         curl_close($ch);
         $pattern = "/<a href='pic_show.asp\?id=78586&cateid=676232&pid=([1-9][0-9]{5,6})'><img src='(.*?)'.*?><\/a>/si";
@@ -86,42 +85,58 @@ class Wrapper extends CI_Controller {
 
     private function page($cate, $id = NULL)
     {
-        $site_url = $this->site['path'];
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-        $url = $site_url . "newsshow.asp?id={$this->site['id']}&cateid={$cate['cateid']}&nid={$id}";
-        curl_setopt($ch, CURLOPT_URL, $url);
-        $src = mb_convert_encoding(curl_exec($ch), 'UTF-8', 'GBK');
-        curl_close($ch);
-        $pattern = "/<td  id=\"fontColor\" height=\"30\" colspan=\"3\" style=\"font-size:16px; color:#000000;font-weight: bold;\" align=\"center\">(.*?)<\/td>/si";
-        preg_match_all($pattern, $src, $title);
-        $pattern = "/来源:本站　　时间:(.*?) <\/font><\/div><\/td>/si";
-        preg_match_all($pattern, $src, $date);
-        $pattern = "/<td id=\"cctent\" align=\"left\">(.*?)<\/td>\r?\n +<td align=\"center\">&nbsp;<\/td>/si";
-        preg_match_all($pattern, $src, $content);
-        $content[1][0] = str_replace('onLoad="fade(this,560,1000)"', '', $content[1][0]);
+        if($id == NULL) {
+            $url = $this->site['path'] . "{$cate['ctrl']}?id={$this->site['id']}&cateid={$cate['cateid']}";
+            curl_setopt($ch, CURLOPT_URL, $url);
+            $src = mb_convert_encoding(curl_exec($ch), 'UTF-8', 'GBK');
+            curl_close($ch);
+            $pattern = '/<table width="708" border="0">(.*?)        <\/table>/si';
+            preg_match_all($pattern, $src, $content);
+            $content[0][0] = preg_replace('/(width="[0-9]{3}")/si', '', $content[0][0]);
+            $data =  array(
+                'cate' => $cate,
+                'content' => $content[0][0],
+                'orig_link' => $url
+            );
+        } else {
+            $url = $this->site['path'] . "newsshow.asp?id={$this->site['id']}&cateid={$cate['cateid']}&nid={$id}";
+            curl_setopt($ch, CURLOPT_URL, $url);
+            $src = mb_convert_encoding(curl_exec($ch), 'UTF-8', 'GBK');
+            curl_close($ch);
+            $pattern = "/<td  id=\"fontColor\" height=\"30\" colspan=\"3\" style=\"font-size:16px; color:#000000;font-weight: bold;\" align=\"center\">(.*?)<\/td>/si";
+            preg_match_all($pattern, $src, $title);
+            $pattern = "/来源:本站　　时间:(.*?) <\/font><\/div><\/td>/si";
+            preg_match_all($pattern, $src, $date);
+            $pattern = "/<td id=\"cctent\" align=\"left\">(.*?)<\/td>\r?\n +<td align=\"center\">&nbsp;<\/td>/si";
+            preg_match_all($pattern, $src, $content);
+            $content[1][0] = preg_replace('/(onload="fade\(this,[0-9]+,[0-9]+\)")/si', '', $content[1][0]);
+            $data = array(
+                'cate' => $cate,
+                'title' => $title[1][0],
+                'date' => $date[1][0],
+                'content' => $content[1][0],
+                'orig_link' => $url
+            );
+        }
         $this->load->view('metroui/header', array(
             'site' => $this->site,
             'title'=> $cate['cname'] .' - 巧家一中 Wrapper'
         ));
-        $this->load->view('metroui/page', array(
-            'cate' => $cate,
-            'title'=> $title[1][0],
-            'date' => $date[1][0],
-            'content' => $content[1][0],
-            'orig_link' => $url
-        ));
+        $this->load->view('metroui/page', $data);
         $this->load->view('metroui/footer');
     }
 
     private function list_a($cate, $id = 1)
     {
         $id = (int)$id;
-        if ($id <= 100) {
-            $site_url = $this->site['path'];
+        if ($id > 1000) {
+            $this->page($cate, $id);
+        } else {
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-            $url = $site_url . $cate['ctrl'] . "?id={$this->site['id']}&cateid={$cate['cateid']}&page={$id}";
+            $url = $this->site['path'] . $cate['ctrl'] . "?id={$this->site['id']}&cateid={$cate['cateid']}&page={$id}";
             curl_setopt($ch, CURLOPT_URL, $url);
             $src = mb_convert_encoding(curl_exec($ch), 'UTF-8', 'GBK');
             curl_close($ch);
@@ -140,13 +155,62 @@ class Wrapper extends CI_Controller {
                 'news' => $news
             ));
             $this->load->view('metroui/footer');
-        } else {
-            $this->page($cate, $id);
         }
+    }
+
+    private function picture($cate, $id)
+    {
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+        $url = $this->site['path'] . "pic_show.asp?id={$this->site['id']}&cateid={$cate['cateid']}&pid={$id}";
+        curl_setopt($ch, CURLOPT_URL, $url);
+        $src = mb_convert_encoding(curl_exec($ch), 'UTF-8', 'GBK');
+        curl_close($ch);
+        $pattern = '/<table width="708" border="0">(.*?)        <\/table>/si';
+        preg_match_all($pattern, $src, $content);
+        $content[0][0] = preg_replace('/(width="480" height="400")/si', 'width="100%" height="480"', $content[0][0]);
+        $content[0][0] = preg_replace("/(pic_show.asp\?id=78586&cateid={$cate['cateid']}&pid=)/si", "./{$cate['name']}/", $content[0][0]);
+        $content[0][0] = preg_replace('/(width="[0-9]{3}")/si', '', $content[0][0]);
+        $content[0][0] = preg_replace('/(onload="fade\(this,[0-9]+,[0-9]+\)")/si', '', $content[0][0]);
+        $this->load->view('metroui/header', array(
+            'site' => $this->site,
+            'title'=> $cate['cname'] .' - 巧家一中 Wrapper'
+        ));
+        $this->load->view('metroui/page', array(
+            'cate' => $cate,
+            'content' => $content[0][0],
+            'orig_link' => $url
+        ));
+        $this->load->view('metroui/footer');
     }
 
     private function gallery($cate, $id = 1)
     {
-        $this->load->view('metroui/start-screen');
+        $id = (int)$id;
+        if ($id > 1000) {
+            $this->picture($cate, $id);
+        } else {
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+            $url = $this->site['path'] . $cate['ctrl'] . "?id={$this->site['id']}&cateid={$cate['cateid']}&page={$id}";
+            curl_setopt($ch, CURLOPT_URL, $url);
+            $src = mb_convert_encoding(curl_exec($ch), 'UTF-8', 'GBK');
+            curl_close($ch);
+            $pattern = "/<img src='(.*?)' width='160' height='110' border='0' ><\/a><br>\r?\n +<a href='pic_show.asp\?id=78586&cateid={$cate['cateid']}&pid=(.*?)' >(.*?) *<\/a>\r?\n +<\/td>/si";
+            preg_match_all($pattern, $src, $pics);
+            $pattern = "/&nbsp;&nbsp;&nbsp; [1-9][0-9]*\/([1-9][0-9]*)         <\/select><\/td>/si";
+            preg_match_all($pattern, $src, $pages);
+            $this->load->view('metroui/header', array(
+                'site' => $this->site,
+                'title'=> $cate['cname'] .' - 巧家一中 Wrapper'
+            ));
+            $this->load->view('metroui/gallery', array(
+                'cate' => $cate,
+                'page' => $id,
+                'pages'=> (int)$pages[1][0],
+                'pics' => $pics
+            ));
+            $this->load->view('metroui/footer');
+        }
     }
 }
