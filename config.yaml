@@ -1,0 +1,6 @@
+name: ynqjyz
+version: 1
+
+handle:
+# 如果 url 既不是文件，也不是目录，跳转至 index.php?%{QUERY_STRING}
+- rewrite: if (!-d && !-f) goto "/index.php?%{QUERY_STRING}"
