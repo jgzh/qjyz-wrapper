@@ -18,7 +18,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 <ul class="horizontal-menu compact">
                     <li>
                         <a target="_blank" href="http://metroui.org.ua/">Powered by Metro UI CSS</a>
-                        <a href="http://ynqjyz.com/">&copy; 2014 YNQJYZ.COM</a>
+                        <a href="http://ynqjyz.com/">&copy; 2016 YNQJYZ.COM</a>
                         <a target="_blank" href="https://mit-license.org/">The MIT License (MIT)</a>
                     </li>
                     <li class="place-right"><a href="javascript:void(0);" onclick="showDialog('statdlg')">免责声明</a></li>
