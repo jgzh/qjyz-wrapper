@@ -98,7 +98,8 @@ class Wrapper extends CI_Controller {
             $data =  array(
                 'cate' => $cate,
                 'content' => $content[0][0],
-                'orig_link' => $url
+                'orig_link' => $url,
+                'title' => $cate['cname']
             );
         } else {
             $url = $this->site['path'] . "newsshow.asp?id={$this->site['id']}&cateid={$cate['cateid']}&nid={$id}";
@@ -112,6 +113,7 @@ class Wrapper extends CI_Controller {
             $pattern = "/<td id=\"cctent\" align=\"left\">(.*?)<\/td>\r?\n +<td align=\"center\">&nbsp;<\/td>/si";
             preg_match_all($pattern, $src, $content);
             $content[1][0] = preg_replace('/(onload="fade\(this,[0-9]+,[0-9]+\)")/si', '', $content[1][0]);
+            $content[1][0] = preg_replace('/(.jpg" width="560")/si', '.jpg"', $content[1][0]);
             $data = array(
                 'cate' => $cate,
                 'title' => $title[1][0],
@@ -122,7 +124,7 @@ class Wrapper extends CI_Controller {
         }
         $this->load->view('metroui/header', array(
             'site' => $this->site,
-            'title'=> $cate['cname'] .' - 巧家一中 Wrapper'
+            'title'=> $data['title'] .' - 巧家一中 Wrapper'
         ));
         $this->load->view('metroui/page', $data);
         $this->load->view('metroui/footer');
