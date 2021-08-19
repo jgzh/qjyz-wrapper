@@ -108,7 +108,7 @@ class Wrapper extends CI_Controller {
             curl_close($ch);
             $pattern = "/<td  id=\"fontColor\" height=\"30\" colspan=\"3\" style=\"font-size:16px; color:#000000;font-weight: bold;\" align=\"center\">(.*?)<\/td>/si";
             preg_match_all($pattern, $src, $title);
-            $pattern = "/来源:本站　　时间:(.*?) <\/font><\/div><\/td>/si";
+            $pattern = "/来源:.*时间:(.*?) <\/font><\/div><\/td>/si";
             preg_match_all($pattern, $src, $date);
             $pattern = "/<td id=\"cctent\" align=\"left\">(.*?)<\/td>\r?\n +<td align=\"center\">&nbsp;<\/td>/si";
             preg_match_all($pattern, $src, $content);
